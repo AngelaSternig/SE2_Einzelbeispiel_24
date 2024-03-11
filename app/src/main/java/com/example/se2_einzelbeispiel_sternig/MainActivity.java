@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 public class MainActivity extends AppCompatActivity {
     private EditText matrikelnummerEditText;
     private TextView ausgabeTextView;
-    private Button sendenButton;
+    private Button sendenButton, berechnenButton;
     private ExecutorService executorService;
 
     @Override
@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
         matrikelnummerEditText = findViewById(R.id.Matrikelnumber);
         ausgabeTextView = findViewById(R.id.Ausgabe);
         sendenButton = findViewById(R.id.Senden);
+        berechnenButton = findViewById(R.id.Berechnen);
 
         executorService = Executors.newSingleThreadExecutor();
 
@@ -34,6 +35,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 sendToServer(matrikelnummerEditText.getText().toString());
+            }
+        });
+
+        berechnenButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String modifiedMatrikelNummer = replaceEverySecondDigit(matrikelnummerEditText.getText().toString());
+                matrikelnummerEditText.setText(modifiedMatrikelNummer);
             }
         });
     }
@@ -72,5 +81,19 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private String replaceEverySecondDigit(String matrikelNummer) {
+        StringBuilder modifiedString = new StringBuilder();
+        for (int i = 0; i < matrikelNummer.length(); i++) {
+            if (i % 2 == 1) { // Für jede zweite Ziffer
+                int num = Character.getNumericValue(matrikelNummer.charAt(i));
+                char replaceChar = (char) ('a' + num); // Umwandeln von 0-9 zu a-j
+                modifiedString.append(replaceChar);
+            } else {
+                modifiedString.append(matrikelNummer.charAt(i));
+            }
+        }
+        return modifiedString.toString();
     }
 }
